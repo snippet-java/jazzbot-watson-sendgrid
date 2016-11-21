@@ -4,7 +4,7 @@ applications:
   memory: 512M
   instances: 1
   domain: mybluemix.net
-  name: jazzbot-sendgrid-test
-  host: jazzbot-sendgrid-test
+  name: jazzbot-sendgrid-test-new
+  host: jazzbot-sendgrid-test-new
   disk_quota: 1024M
   buildpack: liberty-for-java
