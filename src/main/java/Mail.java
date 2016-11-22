@@ -14,15 +14,29 @@ import com.sendgrid.SendGrid;
 
 @WebServlet("/mail")
 public class Mail extends HttpServlet {
+	
+	
+	private static final String APIKEY = "apikey";
+	private static final String TO_EMAIL = "toEmail";
+	private static final String FROM_EMAIL = "fromEmail";
+	private static final String SUBJECT = "subject";
+	private static final String CC_EMAIL = "ccemail";
+	private static final String BCC_EMAIL = "bccemail";
+	
 	private static final long serialVersionUID = 1L;   
+	
+	String parameters = "{"
+            + "\""+APIKEY+"\":\"\","
+            + "\""+TO_EMAIL+"\":\"\","
+            + "\""+FROM_EMAIL+"\":\"\","
+            + "\""+CC_EMAIL+"\":\"\","
+            + "\""+BCC_EMAIL+"\":\"\","
+            + "\""+SUBJECT+"\":\"\","
+            + "\"text\":\"hello my friend\""
+            + "}";
+	
 
-	private String parameters = "{"
-			+ "\"apikey\":\"\","
-			+ "\"toEmail\":\"\","
-			+ "\"fromEmail\":\"\","
-			+ "\"subject\":\"\","
-			+ "\"text\":\"hello my friend\""
-			+ "}";
+	
 	
 	 public static void main(String[] args) {
 		 Mail mail = new Mail();
@@ -34,18 +48,29 @@ public class Mail extends HttpServlet {
 		
 		String output = "";
 		try {
-			String apiKey = credConfig.get("apikey").getAsString();
-			String toEmail = credConfig.get("toEmail").getAsString();
-			String fromEmail = credConfig.get("fromEmail").getAsString();
-			String subject = credConfig.get("subject").getAsString();
+			//Get details from the config
+			String apikey = credConfig.get(APIKEY).getAsString();
+			String toemail = credConfig.get(TO_EMAIL).getAsString();
+			String fromemail = credConfig.get(FROM_EMAIL).getAsString();
+			String subject = credConfig.get(SUBJECT).getAsString();
+			String[] ccemail = null,bccemail = null;		
 			
-			SendGrid sendgrid = new SendGrid(apiKey);
-			SendGrid.Email email = new SendGrid.Email();
-			
-			email.addTo(toEmail);
-			email.setFrom(fromEmail);			
+			SendGrid sendgrid = new SendGrid(apikey);
+			SendGrid.Email email = new SendGrid.Email();			
+			email.addTo(toemail);
+			email.setFrom(fromemail);			
 			email.setSubject(subject);		
-			email.setHtml(text);			
+			email.setHtml(text);
+			
+			if(credConfig.has(CC_EMAIL)) {
+				ccemail= new String[] {credConfig.get(CC_EMAIL).getAsString()};
+				email.setCc(ccemail); 
+			}
+			if(credConfig.has(BCC_EMAIL)) {
+				bccemail= new String[] {credConfig.get(BCC_EMAIL).getAsString()};
+				email.setBcc(bccemail);
+			}
+						
 			output = sendgrid.send(email).getMessage();		
 		}
 		 catch (Exception e) {
